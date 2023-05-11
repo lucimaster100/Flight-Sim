@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class Plane : MonoBehaviour {
     [SerializeField]
-    float maxHealth;
-    [SerializeField]
-    float health;
-    [SerializeField]
     float maxThrust;
     [SerializeField]
     float throttleSpeed;
@@ -65,7 +61,6 @@ public class Plane : MonoBehaviour {
     Vector3 angularDrag;
     [SerializeField]
     float airbrakeDrag;
-
     
     [Header("Misc")]
     [SerializeField]
@@ -83,28 +78,6 @@ public class Plane : MonoBehaviour {
 
     Vector3 lastVelocity;
     PhysicMaterial landingGearDefaultMaterial;
-
-    public float MaxHealth {
-        get {
-            return maxHealth;
-        }
-        set {
-            maxHealth = Mathf.Max(0, value);
-        }
-    }
-
-    public float Health {
-        get {
-            return health;
-        }
-        private set {
-            health = Mathf.Clamp(value, 0, maxHealth);
-
-            if (health == 0 && MaxHealth != 0 && !Dead) {
-                Die();
-            }
-        }
-    }
 
     public bool Dead { get; private set; }
 
@@ -410,8 +383,7 @@ public class Plane : MonoBehaviour {
             if (landingGear.Contains(contact.thisCollider)) {
                 return;
             }
-            
-            Health = 0;
+            Die();
 
             Rigidbody.isKinematic = true;
             Rigidbody.position = contact.point;

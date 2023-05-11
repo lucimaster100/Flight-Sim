@@ -9,8 +9,8 @@ public class PlayerController : MonoBehaviour
     new Camera camera;
     [SerializeField]
     Plane plane;
-    //[SerializeField]
-    //PlaneHUD planeHUD;
+    [SerializeField]
+    PlaneHUD planeHUD;
 
     Vector3 controlInput;
     PlaneCamera planeCamera;
@@ -25,13 +25,13 @@ public class PlayerController : MonoBehaviour
     {
         this.plane = plane;
 
-        /*
+        
         if (planeHUD != null)
         {
             planeHUD.SetPlane(plane);
             planeHUD.SetCamera(camera);
         }
-        */
+        
         planeCamera.SetPlane(plane);
     }
     /*
