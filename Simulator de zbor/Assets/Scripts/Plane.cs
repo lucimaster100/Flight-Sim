@@ -71,6 +71,8 @@ public class Plane : MonoBehaviour {
     List<GameObject> graphics;
     [SerializeField]
     GameObject crashEffect;
+    [SerializeField]
+    GameObject gameOverScreen;
     
 
     float throttleInput;
@@ -115,7 +117,7 @@ public class Plane : MonoBehaviour {
         if (landingGear.Count > 0) {
             landingGearDefaultMaterial = landingGear[0].sharedMaterial;
         }
-        
+        Throttle = 0.25f;
     }
 
     public void SetThrottleInput(float input) {
@@ -139,7 +141,6 @@ public class Plane : MonoBehaviour {
         Throttle = 0;
         Dead = true;
 
-        
         foreach (var go in graphics) {
             go.SetActive(false);
         }
@@ -390,6 +391,7 @@ public class Plane : MonoBehaviour {
             Rigidbody.rotation = Quaternion.Euler(0, Rigidbody.rotation.eulerAngles.y, 0);
 
             crashEffect.SetActive(true);
+            gameOverScreen.SetActive(true);
         }
     }
 }

@@ -5,6 +5,14 @@ using UnityEngine;
 public class PlaneAnimations : MonoBehaviour
 {
     [SerializeField]
+    GameObject afterburnerGraphics;
+    [SerializeField]
+    float afterburnerThreshold;
+    [SerializeField]
+    float afterburnerMinSize;
+    [SerializeField]
+    float afterburnerMaxSize;
+    [SerializeField]
     float maxAileronDeflection;
     [SerializeField]
     float maxElevatorDeflection;
@@ -60,12 +68,28 @@ public class PlaneAnimations : MonoBehaviour
 
     }
 
-    
+    void UpdateAfterburner()
+    {
+        float throttle = plane.Throttle;
+        float afterburnerT = Mathf.Clamp01(Mathf.InverseLerp(afterburnerThreshold, 1, throttle));
+        float size = Mathf.Lerp(afterburnerMinSize, afterburnerMaxSize, afterburnerT);
+
+        if (throttle >= afterburnerThreshold)
+        {
+                afterburnerGraphics.SetActive(true);
+                afterburnerGraphics.transform.localScale = new Vector3(size, size, size);
+        }
+        else
+        {
+                afterburnerGraphics.SetActive(false);
+        }
+    }
+
     void LateUpdate()
     {
         float dt = Time.deltaTime;
 
-        //UpdateAfterburners();
+        UpdateAfterburner();
         UpdateControlSurfaces(dt);
     }
 }

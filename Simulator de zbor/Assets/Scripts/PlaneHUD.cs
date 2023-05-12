@@ -12,19 +12,27 @@ public class PlaneHUD : MonoBehaviour
     [SerializeField]
     Transform targetBox;
     [SerializeField]
+    Transform hudCenter;
+    [SerializeField]
+    Transform velocityMarker;
+    [SerializeField]
     Transform targetArrow;
     [SerializeField]
     Text targetRange;
     [SerializeField]
     float targetArrowThreshold;
     [SerializeField]
-    Checkpoints checkpoint;
+    Text scoreDisplay;
+    [SerializeField]
+    Checkpoint checkpoint;
 
     Plane plane;
     Transform planeTransform;
     new Camera camera;
     Transform cameraTransform;
 
+    GameObject hudCenterGO;
+    GameObject velocityMarkerGO;
     GameObject targetBoxGO;
     GameObject targetArrowGO;
 
@@ -58,6 +66,8 @@ public class PlaneHUD : MonoBehaviour
     }
     void Start()
     {
+        hudCenterGO = hudCenter.gameObject;
+        velocityMarkerGO = velocityMarker.gameObject;
         targetBoxGO = targetBox.gameObject;
         targetArrowGO = targetArrow.gameObject;
     }
@@ -84,6 +94,44 @@ public class PlaneHUD : MonoBehaviour
     {
         var screenSpace = camera.WorldToScreenPoint(worldSpace);
         return screenSpace - new Vector3(camera.pixelWidth / 2, camera.pixelHeight / 2);
+    }
+
+    void UpdateHUDCenter()
+    {
+        var rotation = cameraTransform.localEulerAngles;
+        var hudPos = TransformToHUDSpace(cameraTransform.position + planeTransform.forward);
+
+        if (hudPos.z > 0)
+        {
+            hudCenterGO.SetActive(true);
+            hudCenter.localPosition = new Vector3(hudPos.x, hudPos.y, 0);
+            hudCenter.localEulerAngles = new Vector3(0, 0, -rotation.z);
+        }
+        else
+        {
+            hudCenterGO.SetActive(false);
+        }
+    }
+    void UpdateVelocityMarker()
+    {
+        var velocity = planeTransform.forward;
+
+        if (plane.LocalVelocity.sqrMagnitude > 1)
+        {
+            velocity = plane.Rigidbody.velocity;
+        }
+
+        var hudPos = TransformToHUDSpace(cameraTransform.position + velocity);
+
+        if (hudPos.z > 0)
+        {
+            velocityMarkerGO.SetActive(true);
+            velocityMarker.localPosition = new Vector3(hudPos.x, hudPos.y, 0);
+        }
+        else
+        {
+            velocityMarkerGO.SetActive(false);
+        }
     }
     void UpdateTargetArrow() 
     {
@@ -116,11 +164,19 @@ public class PlaneHUD : MonoBehaviour
             targetArrowGO.SetActive(false);
         }
     }
-    // Update is called once per frame
+
+    void UpdateScore()
+    {
+        scoreDisplay.text = string.Format("Score: {0:0}", checkpoint.getScore());
+    }
+
     void LateUpdate()
     {
         UpdateAirspeed();
         UpdateAltitude();
+        UpdateHUDCenter();
+        UpdateVelocityMarker();
         UpdateTargetArrow();
+        UpdateScore();
     }
 }
