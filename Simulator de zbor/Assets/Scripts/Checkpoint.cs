@@ -25,8 +25,8 @@ public class Checkpoint : MonoBehaviour
     {
         Vector3 planePosition = plane.transform.position;
 
-        float xOffset = Random.Range( 1000,  3000);
-        float zOffset = Random.Range( 1000,  3000);
+        float xOffset = Random.Range( 500,  1500);
+        float zOffset = Random.Range( 500,  1500);
 
         float newX = (Random.Range(0, 2) * 2 - 1) * xOffset + planePosition.x;
         float newZ= (Random.Range(0, 2) * 2 - 1) * zOffset + planePosition.z;

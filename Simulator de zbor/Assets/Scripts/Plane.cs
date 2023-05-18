@@ -64,10 +64,6 @@ public class Plane : MonoBehaviour {
     
     [Header("Misc")]
     [SerializeField]
-    List<Collider> landingGear;
-    [SerializeField]
-    PhysicMaterial landingGearBrakesMaterial;
-    [SerializeField]
     List<GameObject> graphics;
     [SerializeField]
     GameObject crashEffect;
@@ -101,23 +97,13 @@ public class Plane : MonoBehaviour {
             return flapsDeployed;
         }
         private set {
-            flapsDeployed = value;
-
-            
-            foreach (var lg in landingGear) {
-                lg.enabled = value;
-            }
-            
+            flapsDeployed = value;          
         }
     }
 
     void Start() {
         Rigidbody = GetComponent<Rigidbody>();
-        
-        if (landingGear.Count > 0) {
-            landingGearDefaultMaterial = landingGear[0].sharedMaterial;
-        }
-        Throttle = 0.25f;
+        Throttle = 0.5f;
     }
 
     public void SetThrottleInput(float input) {
@@ -151,22 +137,9 @@ public class Plane : MonoBehaviour {
         float target = 0;
         if (throttleInput > 0) target = 1;
 
-        //throttle input is [-1, 1]
-        //throttle is [0, 1]
         Throttle = Utilities.MoveTo(Throttle, target, throttleSpeed * Mathf.Abs(throttleInput), dt);
 
         AirbrakeDeployed = Throttle == 0 && throttleInput == -1;
-
-        
-        if (AirbrakeDeployed) {
-            foreach (var lg in landingGear) {
-                lg.sharedMaterial = landingGearBrakesMaterial;
-            }
-        } else {
-            foreach (var lg in landingGear) {
-                lg.sharedMaterial = landingGearDefaultMaterial;
-            }
-        }
         
     }
 
@@ -197,8 +170,8 @@ public class Plane : MonoBehaviour {
     void CalculateState(float dt) {
         var invRotation = Quaternion.Inverse(Rigidbody.rotation);
         Velocity = Rigidbody.velocity;
-        LocalVelocity = invRotation * Velocity;  //transform world velocity into local space
-        LocalAngularVelocity = invRotation * Rigidbody.angularVelocity;  //transform into local space
+        LocalVelocity = invRotation * Velocity;
+        LocalAngularVelocity = invRotation * Rigidbody.angularVelocity;
 
         CalculateAngleOfAttack();
     }
@@ -208,43 +181,38 @@ public class Plane : MonoBehaviour {
     }
 
     void UpdateDrag() {
-        var lv = LocalVelocity;
-        var lv2 = lv.sqrMagnitude;  //velocity squared
+        var localVelocity = LocalVelocity;
+        var localVelocitySqr = localVelocity.sqrMagnitude;
 
         float airbrakeDrag = AirbrakeDeployed ? this.airbrakeDrag : 0;
         float flapsDrag = FlapsDeployed ? this.flapsDrag : 0;
 
-        //calculate coefficient of drag depending on direction on velocity
-        var coefficient = Utilities.Scale6(
-            lv.normalized,
-            dragRight.Evaluate(Mathf.Abs(lv.x)), dragLeft.Evaluate(Mathf.Abs(lv.x)),
-            dragTop.Evaluate(Mathf.Abs(lv.y)), dragBottom.Evaluate(Mathf.Abs(lv.y)),
-            dragForward.Evaluate(Mathf.Abs(lv.z)) + airbrakeDrag + flapsDrag,   //include extra drag for forward coefficient
-            dragBack.Evaluate(Mathf.Abs(lv.z))
+        var coefficient = Utilities.ModifiedScale(
+            localVelocity.normalized,
+            dragRight.Evaluate(Mathf.Abs(localVelocity.x)), dragLeft.Evaluate(Mathf.Abs(localVelocity.x)),
+            dragTop.Evaluate(Mathf.Abs(localVelocity.y)), dragBottom.Evaluate(Mathf.Abs(localVelocity.y)),
+            dragForward.Evaluate(Mathf.Abs(localVelocity.z)) + airbrakeDrag + flapsDrag,
+            dragBack.Evaluate(Mathf.Abs(localVelocity.z))
         );
 
-        var drag = coefficient.magnitude * lv2 * -lv.normalized;    //drag is opposite direction of velocity
+        var drag = coefficient.magnitude * localVelocitySqr * -localVelocity.normalized;
 
         Rigidbody.AddRelativeForce(drag);
     }
 
     Vector3 CalculateLift(float angleOfAttack, Vector3 rightAxis, float liftPower, AnimationCurve aoaCurve, AnimationCurve inducedDragCurve) {
-        var liftVelocity = Vector3.ProjectOnPlane(LocalVelocity, rightAxis);    //project velocity onto YZ plane
-        var v2 = liftVelocity.sqrMagnitude;                                     //square of velocity
+        var liftVelocity = Vector3.ProjectOnPlane(LocalVelocity, rightAxis);
+        var liftVelocitySqr = liftVelocity.sqrMagnitude;
 
-        //lift = velocity^2 * coefficient * liftPower
-        //coefficient varies with AOA
         var liftCoefficient = aoaCurve.Evaluate(angleOfAttack * Mathf.Rad2Deg);
-        var liftForce = v2 * liftCoefficient * liftPower;
+        var liftForce = liftVelocitySqr * liftCoefficient * liftPower;
 
-        //lift is perpendicular to velocity
         var liftDirection = Vector3.Cross(liftVelocity.normalized, rightAxis);
         var lift = liftDirection * liftForce;
 
-        //induced drag varies with square of lift coefficient
         var dragForce = liftCoefficient * liftCoefficient;
         var dragDirection = -liftVelocity.normalized;
-        var inducedDrag = dragDirection * v2 * dragForce * this.inducedDrag * inducedDragCurve.Evaluate(Mathf.Max(0, LocalVelocity.z));
+        var inducedDrag = dragDirection * liftVelocitySqr * dragForce * this.inducedDrag * inducedDragCurve.Evaluate(Mathf.Max(0, LocalVelocity.z));
 
         return lift + inducedDrag;
     }
@@ -270,25 +238,19 @@ public class Plane : MonoBehaviour {
 
     void UpdateAngularDrag() {
         var av = LocalAngularVelocity;
-        var drag = av.sqrMagnitude * -av.normalized;    //squared, opposite direction of angular velocity
-        Rigidbody.AddRelativeTorque(Vector3.Scale(drag, angularDrag), ForceMode.Acceleration);  //ignore rigidbody mass
+        var drag = av.sqrMagnitude * -av.normalized;
+        Rigidbody.AddRelativeTorque(Vector3.Scale(drag, angularDrag), ForceMode.Acceleration);
     }
 
     Vector3 CalculateGForce(Vector3 angularVelocity, Vector3 velocity) {
-        //estiamte G Force from angular velocity and velocity
-        //Velocity = AngularVelocity * Radius
-        //G = Velocity^2 / R
-        //G = (Velocity * AngularVelocity * Radius) / Radius
-        //G = Velocity * AngularVelocity
-        //G = V cross A
         return Vector3.Cross(angularVelocity, velocity);
     }
 
     Vector3 CalculateGForceLimit(Vector3 input) {
-        return Utilities.Scale6(input,
-            gLimit, gLimitPitch,    //pitch down, pitch up
-            gLimit, gLimit,         //yaw
-            gLimit, gLimit          //roll
+        return Utilities.ModifiedScale(input,
+            gLimit, gLimitPitch,
+            gLimit, gLimit,
+            gLimit, gLimit
         ) * 9.81f;
     }
 
@@ -297,16 +259,12 @@ public class Plane : MonoBehaviour {
             return 1;
         }
 
-        //if the player gives input with magnitude less than 1, scale up their input so that magnitude == 1
         var maxInput = controlInput.normalized;
 
         var limit = CalculateGForceLimit(maxInput);
         var maxGForce = CalculateGForce(Vector3.Scale(maxInput, maxAngularVelocity), LocalVelocity);
 
         if (maxGForce.magnitude > limit.magnitude) {
-            //example:
-            //maxGForce = 16G, limit = 8G
-            //so this is 8 / 16 or 0.5
             return limit.magnitude / maxGForce.magnitude;
         }
 
@@ -325,21 +283,21 @@ public class Plane : MonoBehaviour {
 
         var gForceScaling = CalculateGLimiter(controlInput, turnSpeed * Mathf.Deg2Rad * steeringPower);
 
-        var targetAV = Vector3.Scale(controlInput, turnSpeed * steeringPower * gForceScaling);
-        var av = LocalAngularVelocity * Mathf.Rad2Deg;
+        var targetAngularVelocity = Vector3.Scale(controlInput, turnSpeed * steeringPower * gForceScaling);
+        var angularVelocity = LocalAngularVelocity * Mathf.Rad2Deg;
 
         var correction = new Vector3(
-            CalculateSteering(dt, av.x, targetAV.x, turnAcceleration.x * steeringPower),
-            CalculateSteering(dt, av.y, targetAV.y, turnAcceleration.y * steeringPower),
-            CalculateSteering(dt, av.z, targetAV.z, turnAcceleration.z * steeringPower)
+            CalculateSteering(dt, angularVelocity.x, targetAngularVelocity.x, turnAcceleration.x * steeringPower),
+            CalculateSteering(dt, angularVelocity.y, targetAngularVelocity.y, turnAcceleration.y * steeringPower),
+            CalculateSteering(dt, angularVelocity.z, targetAngularVelocity.z, turnAcceleration.z * steeringPower)
         );
 
         Rigidbody.AddRelativeTorque(correction * Mathf.Deg2Rad, ForceMode.VelocityChange);    //ignore rigidbody mass
 
         var correctionInput = new Vector3(
-            Mathf.Clamp((targetAV.x - av.x) / turnAcceleration.x, -1, 1),
-            Mathf.Clamp((targetAV.y - av.y) / turnAcceleration.y, -1, 1),
-            Mathf.Clamp((targetAV.z - av.z) / turnAcceleration.z, -1, 1)
+            Mathf.Clamp((targetAngularVelocity.x - angularVelocity.x) / turnAcceleration.x, -1, 1),
+            Mathf.Clamp((targetAngularVelocity.y - angularVelocity.y) / turnAcceleration.y, -1, 1),
+            Mathf.Clamp((targetAngularVelocity.z - angularVelocity.z) / turnAcceleration.z, -1, 1)
         );
 
         var effectiveInput = (correctionInput + controlInput) * gForceScaling;
@@ -354,15 +312,12 @@ public class Plane : MonoBehaviour {
     void FixedUpdate() {
         float dt = Time.fixedDeltaTime;
 
-        //calculate at start, to capture any changes that happened externally
         CalculateState(dt);
         CalculateGForce(dt);
         UpdateFlaps();
 
-        //handle user input
         UpdateThrottle(dt);
 
-        //apply updates
         UpdateThrust();
         UpdateLift();
 
@@ -373,7 +328,6 @@ public class Plane : MonoBehaviour {
         UpdateDrag();
         UpdateAngularDrag();
 
-        //calculate again, so that other systems can read this plane's state
         CalculateState(dt);
     }
 
@@ -381,9 +335,6 @@ public class Plane : MonoBehaviour {
         for (int i = 0; i < collision.contactCount; i++) {
             var contact = collision.contacts[i];
 
-            if (landingGear.Contains(contact.thisCollider)) {
-                return;
-            }
             Die();
 
             Rigidbody.isKinematic = true;

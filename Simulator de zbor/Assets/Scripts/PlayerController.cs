@@ -34,18 +34,6 @@ public class PlayerController : MonoBehaviour
         
         planeCamera.SetPlane(plane);
     }
-    /*
-    public void OnToggleHelp(InputAction.CallbackContext context)
-    {
-        if (plane == null) return;
-
-
-        if (context.phase == InputActionPhase.Performed)
-        {
-            planeHUD.ToggleHelpDialogs();
-        }
-    }
-    */
     public void SetThrottleInput(InputAction.CallbackContext context)
     {
         if (plane == null) return;

@@ -11,8 +11,7 @@ public static class Utilities
         return Mathf.Clamp(value + delta, min, max);
     }
 
-    //similar to Vector3.Scale, but has separate factor negative values on each axis
-    public static Vector3 Scale6(
+    public static Vector3 ModifiedScale(
         Vector3 value,
         float posX, float negX,
         float posY, float negY,

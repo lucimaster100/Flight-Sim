@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlaneAnimations : MonoBehaviour
 {
     [SerializeField]
-    GameObject afterburnerGraphics;
+    GameObject afterburnerGO;
     [SerializeField]
     float afterburnerThreshold;
     [SerializeField]
@@ -29,8 +29,6 @@ public class PlaneAnimations : MonoBehaviour
     [SerializeField]
     Transform rudder;
 
-
-
     Plane plane;
     Dictionary<Transform, Quaternion> neutralPoses;
     Vector3 deflection;
@@ -44,7 +42,6 @@ public class PlaneAnimations : MonoBehaviour
         AddNeutralPose(rightAileron);
         AddNeutralPose(rudder);
         AddNeutralPose(elevators);
-        
 
     }
 
@@ -76,12 +73,12 @@ public class PlaneAnimations : MonoBehaviour
 
         if (throttle >= afterburnerThreshold)
         {
-                afterburnerGraphics.SetActive(true);
-                afterburnerGraphics.transform.localScale = new Vector3(size, size, size);
+                afterburnerGO.SetActive(true);
+                afterburnerGO.transform.localScale = new Vector3(size, size, size);
         }
         else
         {
-                afterburnerGraphics.SetActive(false);
+                afterburnerGO.SetActive(false);
         }
     }
 

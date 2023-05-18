@@ -36,7 +36,7 @@ public class PlaneHUD : MonoBehaviour
     GameObject targetBoxGO;
     GameObject targetArrowGO;
 
-    const float metersToKnots = 1.94384f;
+    const float metersToKilometers = 3.6f;
 
     public void SetPlane(Plane plane)
     {
@@ -74,8 +74,8 @@ public class PlaneHUD : MonoBehaviour
 
     void UpdateAirspeed()
     {
-        var speed = plane.LocalVelocity.z * metersToKnots;
-        airspeed.text = string.Format("{0:0}", speed);
+        var speed = plane.LocalVelocity.z * metersToKilometers;
+        airspeed.text = string.Format("{0:0} km/h", speed);
     }
     void UpdateAltitude()
     {
@@ -155,7 +155,7 @@ public class PlaneHUD : MonoBehaviour
         if (targetAngle > targetArrowThreshold)
         {
             targetArrowGO.SetActive(true);
-            //add 180 degrees if target is behind camera
+
             float flip = targetPos.z > 0 ? 0 : 180;
             targetArrow.localEulerAngles = new Vector3(0, 0, flip + Vector2.SignedAngle(Vector2.up, new Vector2(targetPos.x, targetPos.y)));
         }

@@ -25,9 +25,7 @@ public class PlaneCamera : MonoBehaviour
     Plane plane;
     Transform planeTransform;
     Vector2 lookInput;
-    bool dead;
 
-    Vector2 look;
     Vector2 lookAverage;
     Vector3 movementAverage;
 
@@ -62,17 +60,15 @@ public class PlaneCamera : MonoBehaviour
         if (plane == null) return;
 
         var cameraOffset = this.cameraOffset;
+  
+        var lookAngle = Vector2.Scale(lookInput, this.lookAngle);
+        lookAverage = (lookAverage * (1 - lookAlpha)) + (lookAngle * lookAlpha);
 
+        var angularVelocity = plane.LocalAngularVelocity;
+        angularVelocity.z = -angularVelocity.z;
+
+        movementAverage = (movementAverage * (1 - movementAlpha)) + (angularVelocity * movementAlpha);
         
-            var lookAngle = Vector2.Scale(lookInput, this.lookAngle);
-            lookAverage = (lookAverage * (1 - lookAlpha)) + (lookAngle * lookAlpha);
-
-            var angularVelocity = plane.LocalAngularVelocity;
-            angularVelocity.z = -angularVelocity.z;
-
-            movementAverage = (movementAverage * (1 - movementAlpha)) + (angularVelocity * movementAlpha);
-        
-
         var rotation = Quaternion.Euler(-lookAverage.y, lookAverage.x, 0);
 
         var offsetRotation = Quaternion.Euler(new Vector3(movementAverage.x, movementAverage.y) * -movementScale);
