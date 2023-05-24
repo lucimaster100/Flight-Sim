@@ -64,7 +64,7 @@ public class PlaneCamera : MonoBehaviour
         var lookAngle = Vector2.Scale(lookInput, this.lookAngle);
         lookAverage = (lookAverage * (1 - lookAlpha)) + (lookAngle * lookAlpha);
 
-        var angularVelocity = plane.LocalAngularVelocity;
+        var angularVelocity = plane.localAngularVelocity;
         angularVelocity.z = -angularVelocity.z;
 
         movementAverage = (movementAverage * (1 - movementAlpha)) + (angularVelocity * movementAlpha);

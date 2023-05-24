@@ -74,7 +74,7 @@ public class PlaneHUD : MonoBehaviour
 
     void UpdateAirspeed()
     {
-        var speed = plane.LocalVelocity.z * metersToKilometers;
+        var speed = plane.localVelocity.z * metersToKilometers;
         airspeed.text = string.Format("{0:0} km/h", speed);
     }
     void UpdateAltitude()
@@ -116,7 +116,7 @@ public class PlaneHUD : MonoBehaviour
     {
         var velocity = planeTransform.forward;
 
-        if (plane.LocalVelocity.sqrMagnitude > 1)
+        if (plane.localVelocity.sqrMagnitude > 1)
         {
             velocity = plane.Rigidbody.velocity;
         }

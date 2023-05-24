@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         planeCamera = GetComponent<PlaneCamera>();
-        SetPlane(plane);    //SetPlane if var is set in inspector
+        SetPlane(plane);
     }
 
     void SetPlane(Plane plane)
