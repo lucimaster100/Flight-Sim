@@ -19,6 +19,8 @@ public class Animations : MonoBehaviour
     [SerializeField]
     float maxRudderDeflection;
     [SerializeField]
+    float airbrakeDeflection;
+    [SerializeField]
     float deflectionSpeed;
     [SerializeField]
     Transform rightAileron;
@@ -28,10 +30,15 @@ public class Animations : MonoBehaviour
     Transform elevators;
     [SerializeField]
     Transform rudder;
+    [SerializeField]
+    Transform airbrakeTop;
+    [SerializeField]
+    Transform airbrakeBottom;
 
     Plane plane;
     Dictionary<Transform, Quaternion> neutralPoses;
     Vector3 deflection;
+    float airbrakePosition;
     void Start()
     {
         plane = GetComponent<Plane>();
@@ -42,7 +49,8 @@ public class Animations : MonoBehaviour
         AddNeutralPose(rightAileron);
         AddNeutralPose(rudder);
         AddNeutralPose(elevators);
-
+        AddNeutralPose(airbrakeTop);
+        AddNeutralPose(airbrakeBottom);
     }
 
     void AddNeutralPose(Transform transform)
@@ -63,6 +71,15 @@ public class Animations : MonoBehaviour
         elevators.localRotation = neutralPoses[elevators] * Quaternion.Euler(deflection.x * maxElevatorDeflection, 0, 0);
         rudder.localRotation = neutralPoses[rudder] * Quaternion.Euler(0, -deflection.y * maxRudderDeflection, 0);
 
+    }
+    void UpdateAirbrakes(float dt)
+    {
+        var target = plane.AirbrakeDeployed ? 1 : 0;
+
+        airbrakePosition = Utilities.IncrementalMove(airbrakePosition, target, deflectionSpeed, dt);
+
+        airbrakeTop.localRotation = neutralPoses[airbrakeTop]* Quaternion.Euler(airbrakePosition * airbrakeDeflection, 0, 0);
+        airbrakeBottom.localRotation= neutralPoses[airbrakeTop] * Quaternion.Euler(-airbrakePosition * airbrakeDeflection, 0, 0);
     }
 
     void UpdateAfterburner()
@@ -88,5 +105,6 @@ public class Animations : MonoBehaviour
 
         UpdateAfterburner();
         UpdateControlSurfaces(dt);
+        UpdateAirbrakes(dt);
     }
 }
