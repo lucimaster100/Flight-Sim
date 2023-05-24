@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class Checkpoint : MonoBehaviour
 {
@@ -74,10 +75,14 @@ public class Checkpoint : MonoBehaviour
 
     private void Start()
     {
-        RandomizePosition();
+        StartCoroutine(Wait());
         oldTime = Time.time;
     }
-
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(2);
+        RandomizePosition();
+    }
     private void OnTriggerEnter(Collider other)
     {
         CalculateScore();
