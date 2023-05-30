@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class PlaneHUD : MonoBehaviour
 {
     [SerializeField]
+    bool takeoff;
+    [SerializeField]
     Text airspeed;
     [SerializeField]
     Text altitude;
@@ -70,6 +72,12 @@ public class PlaneHUD : MonoBehaviour
         velocityMarkerGO = velocityMarker.gameObject;
         targetBoxGO = targetBox.gameObject;
         targetArrowGO = targetArrow.gameObject;
+        if (takeoff)
+        {
+            targetArrowGO.SetActive(false);
+            targetBoxGO.SetActive(false);
+            checkpoint.gameObject.SetActive(false);
+        }
     }
 
     void UpdateAirspeed()
@@ -176,7 +184,10 @@ public class PlaneHUD : MonoBehaviour
         UpdateAltitude();
         UpdateHUDCenter();
         UpdateVelocityMarker();
-        UpdateTargetArrow();
         UpdateScore();
+        if (!takeoff)
+        {
+            UpdateTargetArrow();
+        }
     }
 }

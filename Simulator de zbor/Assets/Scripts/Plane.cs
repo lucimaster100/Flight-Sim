@@ -27,6 +27,14 @@ public class Plane : MonoBehaviour {
     AnimationCurve rudderAOACurve;
     [SerializeField]
     AnimationCurve rudderInducedDragCurve;
+    [SerializeField]
+    float flapsLiftPower;
+    [SerializeField]
+    float flapsAOABias;
+    [SerializeField]
+    float flapsDrag;
+    [SerializeField]
+    float flapsRetractSpeed;
 
     [Header("Steering")]
     [SerializeField]
@@ -56,17 +64,25 @@ public class Plane : MonoBehaviour {
     
     [Header("Misc")]
     [SerializeField]
+    List<Collider> landingGear;
+    [SerializeField]
+    PhysicMaterial landingGearBrakesMaterial;
+    [SerializeField]
     List<GameObject> graphics;
     [SerializeField]
     GameObject crashEffect;
     [SerializeField]
+    bool flapsDeployed;
+    [SerializeField]
+    bool flightMode;
+    [SerializeField]
     GameObject gameOverScreen;
-    
 
     float throttleInput;
     Vector3 controlInput;
 
     Vector3 lastVelocity;
+    PhysicMaterial landingGearDefaultMaterial;
 
     public bool Dead { get; private set; }
 
@@ -81,13 +97,35 @@ public class Plane : MonoBehaviour {
     public float angleOfAttackYaw { get; private set; }
     public bool AirbrakeDeployed { get; private set; }
 
-    
+    public bool FlapsDeployed
+    {
+        get
+        {
+            return flapsDeployed;
+        }
+        private set
+        {
+            flapsDeployed = value;
+
+            foreach (var lg in landingGear)
+            {
+                lg.enabled = value;
+            }
+        }
+    }
+
 
     void Start() {
         Rigidbody = GetComponent<Rigidbody>();
-        throttle = 0.5f;
+        if (landingGear.Count > 0)
+        {
+            landingGearDefaultMaterial = landingGear[0].sharedMaterial;
+        }
+        if (flightMode)
+        {
+            throttle = 0.25f;
+        }
     }
-
     public void SetThrottleInput(float input) {
         if (Dead) return;
         throttleInput = input;
@@ -108,6 +146,13 @@ public class Plane : MonoBehaviour {
         }
         
     }
+    public void ToggleFlaps()
+    {
+        if (localVelocity.z < flapsRetractSpeed)
+        {
+            FlapsDeployed = !FlapsDeployed;
+        }
+    }
 
     void UpdateThrottle(float dt) {
         float target = 0;
@@ -116,7 +161,30 @@ public class Plane : MonoBehaviour {
         throttle = Utilities.IncrementalMove(throttle, target, throttleSpeed * Mathf.Abs(throttleInput), dt);
 
         AirbrakeDeployed = throttle == 0 && throttleInput == -1;
-        
+
+        if (AirbrakeDeployed)
+        {
+            foreach (var lg in landingGear)
+            {
+                lg.sharedMaterial = landingGearBrakesMaterial;
+            }
+        }
+        else
+        {
+            foreach (var lg in landingGear)
+            {
+                lg.sharedMaterial = landingGearDefaultMaterial;
+            }
+        }
+
+    }
+
+    void UpdateFlaps()
+    {
+        if (localVelocity.z > flapsRetractSpeed)
+        {
+            FlapsDeployed = false;
+        }
     }
 
     void CalculateAngleOfAttack() {
@@ -155,12 +223,13 @@ public class Plane : MonoBehaviour {
         var localVelocitySq = localVelocity.sqrMagnitude;
 
         float airbrakeDrag = AirbrakeDeployed ? this.airbrakeDrag : 0;
+        float flapsDrag = FlapsDeployed ? this.flapsDrag : 0;
 
         var coefficient = Utilities.ModifiedScale(
             localVelocity.normalized,
             dragRight.Evaluate(Mathf.Abs(localVelocity.x)), dragLeft.Evaluate(Mathf.Abs(localVelocity.x)),
             dragTop.Evaluate(Mathf.Abs(localVelocity.y)), dragBottom.Evaluate(Mathf.Abs(localVelocity.y)),
-            dragForward.Evaluate(Mathf.Abs(localVelocity.z)) + airbrakeDrag,
+            dragForward.Evaluate(Mathf.Abs(localVelocity.z)) + airbrakeDrag+flapsDrag,
             dragBack.Evaluate(Mathf.Abs(localVelocity.z))
         );
 
@@ -189,10 +258,12 @@ public class Plane : MonoBehaviour {
     void UpdateLift() {
         if (localVelocity.sqrMagnitude < 1f) return;
 
+        float flapsLiftPower = FlapsDeployed ? this.flapsLiftPower : 0;
+        float flapsAOABias = FlapsDeployed ? this.flapsAOABias : 0;
 
         var liftForce = CalculateLift(
-            angleOfAttack , Vector3.right,
-            liftPower,
+            angleOfAttack + (flapsAOABias * Mathf.Deg2Rad), Vector3.right,
+            liftPower + flapsLiftPower,
             liftAOACurve,
             inducedDragCurve
         );
@@ -281,6 +352,7 @@ public class Plane : MonoBehaviour {
 
         CalculateState(dt);
         CalculateGForce(dt);
+        UpdateFlaps();
 
         UpdateThrottle(dt);
 
@@ -300,6 +372,11 @@ public class Plane : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
         for (int i = 0; i < collision.contactCount; i++) {
             var contact = collision.contacts[i];
+
+            if (landingGear.Contains(contact.thisCollider))
+            {
+                return;
+            }
 
             Die();
 

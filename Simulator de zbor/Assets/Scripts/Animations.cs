@@ -21,6 +21,8 @@ public class Animations : MonoBehaviour
     [SerializeField]
     float airbrakeDeflection;
     [SerializeField]
+    float flapsDeflection;
+    [SerializeField]
     float deflectionSpeed;
     [SerializeField]
     Transform rightAileron;
@@ -34,11 +36,14 @@ public class Animations : MonoBehaviour
     Transform airbrakeTop;
     [SerializeField]
     Transform airbrakeBottom;
+    [SerializeField]
+    List<Transform> flaps;
 
     Plane plane;
     Dictionary<Transform, Quaternion> neutralPoses;
     Vector3 deflection;
     float airbrakePosition;
+    float flapsPosition;
     void Start()
     {
         plane = GetComponent<Plane>();
@@ -51,6 +56,11 @@ public class Animations : MonoBehaviour
         AddNeutralPose(elevators);
         AddNeutralPose(airbrakeTop);
         AddNeutralPose(airbrakeBottom);
+        
+        foreach (var t in flaps)
+        {
+            AddNeutralPose(t);
+        }
     }
 
     void AddNeutralPose(Transform transform)
@@ -82,6 +92,18 @@ public class Animations : MonoBehaviour
         airbrakeBottom.localRotation= neutralPoses[airbrakeTop] * Quaternion.Euler(-airbrakePosition * airbrakeDeflection, 0, 0);
     }
 
+    void UpdateFlaps(float dt)
+    {
+        var target = plane.FlapsDeployed ? 1 : 0;
+
+        flapsPosition = Utilities.IncrementalMove(flapsPosition, target, deflectionSpeed, dt);
+
+        foreach (var t in flaps)
+        {
+            t.localRotation = neutralPoses[t]* Quaternion.Euler(-flapsPosition * flapsDeflection, 0, 0);
+        }
+    }
+
     void UpdateAfterburner()
     {
         float throttle = plane.throttle;
@@ -106,5 +128,6 @@ public class Animations : MonoBehaviour
         UpdateAfterburner();
         UpdateControlSurfaces(dt);
         UpdateAirbrakes(dt);
+        UpdateFlaps(dt);
     }
 }
