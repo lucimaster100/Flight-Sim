@@ -20,15 +20,22 @@ public class EngineSound : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!plane.Dead)
+        if (Time.timeScale == 0)
         {
-            float throttle = plane.throttle;
-            audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, throttle);
-            audioSource.volume = Mathf.Lerp(minVolume, maxVolume, throttle);
+            audioSource.pitch = 0;
         }
         else
         {
-            audioSource.pitch = 0;
+            if (!plane.Dead)
+            {
+                float throttle = plane.throttle;
+                audioSource.pitch = Mathf.Lerp(minPitch, maxPitch, throttle);
+                audioSource.volume = Mathf.Lerp(minVolume, maxVolume, throttle);
+            }
+            else
+            {
+                audioSource.pitch = 0;
+            }
         }
     }
 }

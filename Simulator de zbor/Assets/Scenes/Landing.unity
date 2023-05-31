@@ -738,7 +738,7 @@ Transform:
   m_GameObject: {fileID: 517374819}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 450}
-  m_LocalScale: {x: 50, y: 1, z: 1000}
+  m_LocalScale: {x: 70, y: 1, z: 1000}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1884,7 +1884,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eff99a6432a36346b66eebbf0ffdb17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  takeoff: {fileID: 1957437584}
+  takeoff: {fileID: 0}
 --- !u!1 &1170123502
 GameObject:
   m_ObjectHideFlags: 0
@@ -8188,7 +8188,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1957437578}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebc85339646a4264ab3bb2d51c64292f, type: 3}
+  m_Script: {fileID: 11500000, guid: 1dee103babed2cf44b6bda989a125fda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   plane: {fileID: 9063240143473487932}
@@ -9646,8 +9646,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9063240143473487929}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0, y: 500, z: 3000}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9675,7 +9675,7 @@ Transform:
   - {fileID: 407182377}
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!23 &8695860655805099293
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -10276,8 +10276,8 @@ MonoBehaviour:
   - {fileID: 7446824578473461110}
   - {fileID: 2056986828}
   crashEffect: {fileID: 1518623468}
-  flapsDeployed: 1
-  flightMode: 0
+  flapsDeployed: 0
+  flightMode: 1
   gameOverScreen: {fileID: 917017268}
 --- !u!82 &9063240143473487933
 AudioSource:
