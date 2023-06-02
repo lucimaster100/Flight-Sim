@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Main Menu.unity
     guid: e5fe5cd913580424f84d6686954ecc66
   - enabled: 1
+    path: Assets/Scenes/Takeoff.unity
+    guid: 65031949e70e5d74f86a4af467fd3790
+  - enabled: 1
+    path: Assets/Scenes/Landing.unity
+    guid: b06e7aa440e74d741b99137fdec75756
+  - enabled: 1
     path: Assets/Scenes/PointCollection.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects:

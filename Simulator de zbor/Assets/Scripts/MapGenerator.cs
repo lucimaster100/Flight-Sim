@@ -29,6 +29,11 @@ public class MapGenerator : MonoBehaviour
 
 	public bool autoUpdate;
 
+	[SerializeField]
+	bool randomSeed;
+	[SerializeField]
+	int givenSeed;
+
 	public TerrainType[] regions;
 
 	Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
@@ -36,7 +41,14 @@ public class MapGenerator : MonoBehaviour
 
     private void Start()
     {
-		seed = (int)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+		if (randomSeed)
+		{
+			seed = (int)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        }
+        else
+        {
+			seed = givenSeed;
+        }
 	}
     public void DrawMapInEditor()
 	{

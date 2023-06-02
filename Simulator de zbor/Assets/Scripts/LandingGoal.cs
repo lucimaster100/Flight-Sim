@@ -11,13 +11,9 @@ public class LandingGoal : MonoBehaviour
     [SerializeField]
     GameObject planeHud;
 
-    public bool pause;
     Vector3 velocity;
 
-    private void Start()
-    {
-        pause = true;
-    }
+
     private void Update()
     {
         velocity = plane.localVelocity;
@@ -29,12 +25,14 @@ public class LandingGoal : MonoBehaviour
         yield return new WaitForSeconds(2);
         if (velocity == Vector3.zero)
         {
-            if (pause)
-            {
-                Time.timeScale = 0f;
-            }
+            Time.timeScale = 0f;
             planeHud.SetActive(false);
             pauseScreen.SetActive(true);
         }
+    }
+
+    private void OnDestroy()
+    {
+        Time.timeScale = 1f;
     }
 }
