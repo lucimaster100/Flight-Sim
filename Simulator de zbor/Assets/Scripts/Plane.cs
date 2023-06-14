@@ -81,7 +81,6 @@ public class Plane : MonoBehaviour {
     float throttleInput;
     Vector3 controlInput;
 
-    Vector3 lastVelocity;
     PhysicMaterial landingGearDefaultMaterial;
 
     public bool Dead { get; private set; }
@@ -91,7 +90,6 @@ public class Plane : MonoBehaviour {
     public Vector3 EffectiveInput { get; private set; }
     public Vector3 velocity { get; private set; }
     public Vector3 localVelocity { get; private set; }
-    public Vector3 LocalGForce { get; private set; }
     public Vector3 localAngularVelocity { get; private set; }
     public float angleOfAttack { get; private set; }
     public float angleOfAttackYaw { get; private set; }
@@ -198,14 +196,7 @@ public class Plane : MonoBehaviour {
         angleOfAttackYaw = Mathf.Atan2(localVelocity.x, localVelocity.z);
     }
 
-    void CalculateGForce(float dt) {
-        var invRotation = Quaternion.Inverse(Rigidbody.rotation);
-        var acceleration = (velocity - lastVelocity) / dt;
-        LocalGForce = invRotation * acceleration;
-        lastVelocity = velocity;
-    }
-
-    void CalculateState(float dt) {
+    void CalculateState() {
         var invRotation = Quaternion.Inverse(Rigidbody.rotation);
         velocity = Rigidbody.velocity;
         localVelocity = invRotation * velocity;
@@ -280,7 +271,7 @@ public class Plane : MonoBehaviour {
         Rigidbody.AddRelativeTorque(Vector3.Scale(drag, angularDrag), ForceMode.Acceleration);
     }
 
-    Vector3 CalculateGForce(Vector3 angularVelocity, Vector3 velocity) {
+    Vector3 CalculateFutureGForce(Vector3 angularVelocity, Vector3 velocity) {
         return Vector3.Cross(angularVelocity, velocity);
     }
 
@@ -300,7 +291,7 @@ public class Plane : MonoBehaviour {
         var maxInput = controlInput.normalized;
 
         var limit = CalculateGForceLimit(maxInput);
-        var maxGForce = CalculateGForce(Vector3.Scale(maxInput, maxAngularVelocity), localVelocity);
+        var maxGForce = CalculateFutureGForce(Vector3.Scale(maxInput, maxAngularVelocity), localVelocity);
 
         if (maxGForce.magnitude > limit.magnitude) {
             return limit.magnitude / maxGForce.magnitude;
@@ -350,8 +341,7 @@ public class Plane : MonoBehaviour {
     void FixedUpdate() {
         float dt = Time.fixedDeltaTime;
 
-        CalculateState(dt);
-        CalculateGForce(dt);
+        CalculateState();
         UpdateFlaps();
 
         UpdateThrottle(dt);
@@ -366,7 +356,7 @@ public class Plane : MonoBehaviour {
         UpdateDrag();
         UpdateAngularDrag();
 
-        CalculateState(dt);
+        CalculateState();
     }
 
     void OnCollisionEnter(Collision collision) {

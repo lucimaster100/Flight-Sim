@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d62b49186f7d484a9f06436a3cf982e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerDuration: 1
+  timerDuration: 5
   timerText: {fileID: 462828305}
   pauseScreen: {fileID: 2132245644}
 --- !u!4 &191581051
@@ -7589,8 +7589,8 @@ MonoBehaviour:
   cameraOffset: {x: 0, y: 4, z: -40}
   lookAngle: {x: 170, y: 90}
   movementScale: 5
-  lookAlpha: 0.25
-  movementAlpha: 0.0625
+  lookAlpha: 0.1
+  movementAlpha: 0.05
   deathOffset: {x: 0, y: 12, z: -40}
   deathSensitivity: 120
 --- !u!1 &2011047514
