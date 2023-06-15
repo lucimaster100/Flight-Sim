@@ -7133,79 +7133,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drawMode: 2
+  terrainData: {fileID: 11400000, guid: b9e6a38d3edbc0c48b82303f14736244, type: 2}
+  noiseData: {fileID: 11400000, guid: 9d9fcd5c6b6fa7745aec7873b0f8a7d8, type: 2}
+  textureData: {fileID: 11400000, guid: a83b4a743b8050245a52b55e078099a1, type: 2}
+  terrainMaterial: {fileID: 2100000, guid: 524eb694db3a4af468914f4a8bfea27d, type: 2}
   normalizeMode: 1
   editorPreviewLOD: 0
-  noiseScale: 200
-  octaves: 5
-  persistance: 0.5
-  lacunarity: 2
-  seed: 0
-  offset: {x: 0, y: 0}
-  meshHeightMultiplier: 130
-  meshHeightCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.40091825
-      value: 0.0047932174
-      inSlope: 0.022351686
-      outSlope: 0.022351686
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.27182502
-      outWeight: 0.10208906
-    - serializedVersion: 3
-      time: 1.1928587
-      value: 1.0529194
-      inSlope: -0.014852097
-      outSlope: -0.014852097
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.28254718
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
   autoUpdate: 1
   randomSeed: 1
   givenSeed: 0
-  regions:
-  - name: Deep Water
-    height: 0
-    colour: {r: 0, g: 0.15515971, b: 0.6037736, a: 0}
-  - name: Shallow water
-    height: 0.15
-    colour: {r: 0.08276964, g: 0.30834013, b: 0.7075472, a: 0}
-  - name: Shore
-    height: 0.25
-    colour: {r: 0.7676082, g: 0.8113208, b: 0.36279812, a: 0}
-  - name: Grass
-    height: 0.3
-    colour: {r: 0.1668997, g: 0.5471698, b: 0.16208613, a: 0}
-  - name: Grass2
-    height: 0.35
-    colour: {r: 0.07006049, g: 0.4528302, b: 0.11644098, a: 0}
-  - name: Mountain1
-    height: 0.5
-    colour: {r: 0.3679245, g: 0.29388288, b: 0.23394446, a: 0}
-  - name: Mountain2
-    height: 0.55
-    colour: {r: 0.31132078, g: 0.29720595, b: 0.2860627, a: 0}
-  - name: Mountain3
-    height: 0.65
-    colour: {r: 0.254717, g: 0.24198115, b: 0.22924529, a: 0}
-  - name: Snow
-    height: 0.8
-    colour: {r: 0.764151, g: 0.7622973, b: 0.7598256, a: 0}
 --- !u!4 &1700358949
 Transform:
   m_ObjectHideFlags: 0

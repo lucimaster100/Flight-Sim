@@ -23,7 +23,7 @@ public class LandingGoal : MonoBehaviour
     IEnumerator Wait()
     {
         yield return new WaitForSeconds(2);
-        if (velocity == Vector3.zero)
+        if (velocity == Vector3.zero && !plane.Dead)
         {
             Time.timeScale = 0f;
             planeHud.SetActive(false);
