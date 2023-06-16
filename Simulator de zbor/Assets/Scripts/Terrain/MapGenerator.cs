@@ -50,6 +50,7 @@ public class MapGenerator : MonoBehaviour
 	}
 	private void Start()
     {
+		textureData.ApplyToMaterial(terrainMaterial);
 		if (randomSeed)
 		{
 			noiseData.seed = (int)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
