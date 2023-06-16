@@ -23,6 +23,8 @@ public class MapGenerator : MonoBehaviour
 
 	public bool autoUpdate;
 
+	int seed = 0;
+
 	[SerializeField]
 	bool randomSeed;
 	[SerializeField]
@@ -53,11 +55,11 @@ public class MapGenerator : MonoBehaviour
 		textureData.ApplyToMaterial(terrainMaterial);
 		if (randomSeed)
 		{
-			noiseData.seed = (int)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+			seed = (int)UnityEngine.Random.Range(int.MinValue, int.MaxValue);
         }
         else
         {
-			noiseData.seed = givenSeed;
+			seed = givenSeed;
         }
 	}
     public void DrawMapInEditor()
@@ -135,7 +137,7 @@ public class MapGenerator : MonoBehaviour
 
 	MapData GenerateMapData(Vector2 center)
 	{
-		float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, noiseData.seed, noiseData.noiseScale, noiseData.octaves, noiseData.persistance, noiseData.lacunarity,center+ noiseData.offset,normalizeMode);
+		float[,] noiseMap = Noise.GenerateNoiseMap(mapChunkSize, mapChunkSize, seed, noiseData.noiseScale, noiseData.octaves, noiseData.persistance, noiseData.lacunarity,center+ noiseData.offset,normalizeMode);
 
 		return new MapData(noiseMap);
 	}
