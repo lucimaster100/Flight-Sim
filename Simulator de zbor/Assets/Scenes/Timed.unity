@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d62b49186f7d484a9f06436a3cf982e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timerDuration: 5
+  timerDuration: 3
   timerText: {fileID: 462828305}
   pauseScreen: {fileID: 2132245644}
 --- !u!4 &191581051
@@ -1269,7 +1269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   plane: {fileID: 9063240143473487932}
-  maxHeight: 4000
+  maxHeight: 4500
 --- !u!1 &917017268
 GameObject:
   m_ObjectHideFlags: 0

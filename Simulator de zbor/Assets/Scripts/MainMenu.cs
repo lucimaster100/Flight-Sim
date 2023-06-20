@@ -11,6 +11,11 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(1);
     }
 
+    public void EndlessGameMode()
+    {
+        SceneManager.LoadScene(4);
+    }
+
     public void QuitButton()
     {
         Application.Quit();
